@@ -1,0 +1,1 @@
+<!-- i got a background image called globe to be used in this section. Give me the code. using hero ui, gravity icons, tailwindcss, nextjs. -->
