@@ -10,54 +10,126 @@ import {
     Label,
     ListBox,
     Select,
+    Switch,
     TextArea,
     TextField,
 } from "@heroui/react";
 import { ChevronsExpandVertical } from "@gravity-ui/icons";
+import toast from "react-hot-toast";
+import { redirect } from "next/navigation";
+
+const initialData = {
+    title: "",
+    category: "",
+    type: "",
+    min: "",
+    max: "",
+    currency: "",
+    location: "",
+    remote: false,
+    deadline: "",
+    responsibilities: "",
+    requirements: "",
+    benefits: "",
+};
+
+const categories = [
+    ["development", "Software Development"],
+    ["design", "Design"],
+    ["marketing", "Marketing"],
+    ["sales", "Sales"],
+    ["finance", "Finance"],
+    ["other", "Other"],
+];
+
+const types = [
+    ["full-time", "Full-time"],
+    ["part-time", "Part-time"],
+    ["contract", "Contract"],
+    ["internship", "Internship"],
+];
+
+const SelectBox = ({ items, value, onChange, placeholder }) => (
+    <Select value={value} onChange={onChange}>
+        <Select.Trigger className="h-10 rounded-md border border-white/10 bg-[#202021] px-3 text-sm text-gray-300">
+            <Select.Value placeholder={placeholder} />
+            <Select.Indicator>
+                <ChevronsExpandVertical size={14} />
+            </Select.Indicator>
+        </Select.Trigger>
+
+        <Select.Popover>
+            <ListBox>
+                {items.map(([id, label]) => (
+                    <ListBox.Item key={id} id={id} textValue={label}>
+                        {label}
+                    </ListBox.Item>
+                ))}
+            </ListBox>
+        </Select.Popover>
+    </Select>
+);
 
 export default function PostJobPage() {
+    const [data, setData] = useState(initialData);
     const [loading, setLoading] = useState(false);
 
-    const [data, setData] = useState({
-        title: "",
-        category: "",
-        type: "",
-        min: "",
-        max: "",
-        currency: "USD",
-        location: "",
-        deadline: "",
-        responsibilities: "",
-        requirements: "",
-    });
+    // Company ID
+    const companyId = "company_123";
 
-    const update = (key, value) =>
-        setData((prev) => ({ ...prev, [key]: value }));
+    const update = (key, value) => {
+        setData((prev) => ({
+            ...prev,
+            [key]: value,
+        }));
+    };
 
     const input =
         "h-10 rounded-md border border-white/10 bg-[#202021] px-3 text-sm text-white outline-none placeholder:text-gray-500 focus:border-white/25";
 
-    const select =
-        "h-10 rounded-md border border-white/10 bg-[#202021] px-3 text-sm text-gray-300";
+    const textarea =
+        "min-h-[80px] resize-none rounded-md border border-white/10 bg-[#202021] px-3 py-2 text-sm text-white outline-none placeholder:text-gray-500";
 
-    const options = (items) => (
-        <ListBox>
-            {items.map(([id, label]) => (
-                <ListBox.Item key={id} id={id} textValue={label}>
-                    {label}
-                </ListBox.Item>
-            ))}
-        </ListBox>
-    );
-
-    const submit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
-        const job = { ...data, status: "active" };
-        console.log(job);
+        try {
+            const res = await fetch("http://localhost:5000/api/jobs", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    companyId,
 
-        setTimeout(() => setLoading(false), 700);
+                    ...data,
+
+                    min: Number(data.min) || 0,
+                    max: Number(data.max) || 0,
+
+                    status: "active",
+                }),
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                throw new Error(result.message);
+            }
+
+            toast.success("Job posted successfully!");
+
+            setData(initialData);
+
+            redirect("/dashboard/recruiter");
+        } catch (error) {
+            console.error(error);
+            toast.error(error.message || "Failed to post job!");
+        } finally {
+            setLoading(false);
+            redirect("/dashboard/recruiter/jobs");
+        }
     };
 
     return (
@@ -65,13 +137,16 @@ export default function PostJobPage() {
             <div className="mx-auto max-w-4xl overflow-hidden rounded-lg border border-white/10 bg-[#151516]">
 
                 <div className="border-b border-white/10 px-5 py-5">
-                    <h1 className="text-xl font-medium">Post a New Job</h1>
+                    <h1 className="text-xl font-medium">
+                        Post a New Job
+                    </h1>
+
                     <p className="mt-1 text-xs text-gray-400">
                         Create a job posting and find the right candidate.
                     </p>
                 </div>
 
-                <Form onSubmit={submit}>
+                <Form onSubmit={handleSubmit}>
 
                     {/* Job Info */}
                     <Fieldset className="border-0 p-0">
@@ -81,193 +156,225 @@ export default function PostJobPage() {
 
                         <Fieldset.Group className="grid grid-cols-1 gap-4 px-5 py-5 md:grid-cols-2">
 
+                            {/* Title */}
                             <TextField
                                 isRequired
                                 value={data.title}
                                 onChange={(v) => update("title", v)}
                             >
-                                <Label className="mb-1.5 text-xs">Job Title</Label>
+                                <Label className="mb-1.5 text-xs">
+                                    Job Title
+                                </Label>
+
                                 <Input
                                     placeholder="e.g. Frontend Developer"
                                     className={input}
                                 />
+
                                 <FieldError />
                             </TextField>
 
-                            <Select
-                                isRequired
-                                value={data.category}
-                                onChange={(v) => update("category", v)}
-                            >
-                                <Label className="mb-1.5 text-xs">Job Category</Label>
-                                <Select.Trigger className={select}>
-                                    <Select.Value placeholder="Select category" />
-                                    <Select.Indicator>
-                                        <ChevronsExpandVertical size={14} />
-                                    </Select.Indicator>
-                                </Select.Trigger>
-
-                                <Select.Popover>
-                                    {options([
-                                        ["development", "Software Development"],
-                                        ["design", "Design"],
-                                        ["marketing", "Marketing"],
-                                        ["sales", "Sales"],
-                                        ["finance", "Finance"],
-                                        ["other", "Other"],
-                                    ])}
-                                </Select.Popover>
-                                <FieldError />
-                            </Select>
-
-                            <Select
-                                isRequired
-                                value={data.type}
-                                onChange={(v) => update("type", v)}
-                            >
-                                <Label className="mb-1.5 text-xs">Job Type</Label>
-                                <Select.Trigger className={select}>
-                                    <Select.Value placeholder="Select job type" />
-                                    <Select.Indicator>
-                                        <ChevronsExpandVertical size={14} />
-                                    </Select.Indicator>
-                                </Select.Trigger>
-
-                                <Select.Popover>
-                                    {options([
-                                        ["full-time", "Full-time"],
-                                        ["part-time", "Part-time"],
-                                        ["contract", "Contract"],
-                                        ["internship", "Internship"],
-                                    ])}
-                                </Select.Popover>
-                                <FieldError />
-                            </Select>
-
+                            {/* Category */}
                             <div>
-                                <label className="mb-1.5 block text-xs">Salary Range</label>
-                                <div className="grid grid-cols-[1fr_1fr_80px] gap-2">
+                                <Label className="mb-1.5 block text-xs">
+                                    Job Category
+                                </Label>
+
+                                <SelectBox
+                                    items={categories}
+                                    value={data.category}
+                                    onChange={(v) =>
+                                        update("category", v)
+                                    }
+                                    placeholder="Select category"
+                                />
+                            </div>
+
+                            {/* Type */}
+                            <div>
+                                <Label className="mb-1.5 block text-xs">
+                                    Job Type
+                                </Label>
+
+                                <SelectBox
+                                    items={types}
+                                    value={data.type}
+                                    onChange={(v) =>
+                                        update("type", v)
+                                    }
+                                    placeholder="Select job type"
+                                />
+                            </div>
+
+                            {/* Salary */}
+                            <div>
+                                <label className="mb-1.5 block text-xs">
+                                    Salary Range
+                                </label>
+
+                                <div className="grid grid-cols-3 gap-2">
                                     <Input
                                         type="number"
                                         placeholder="Min"
                                         value={data.min}
-                                        onChange={(e) => update("min", e.target.value)}
+                                        onChange={(e) =>
+                                            update(
+                                                "min",
+                                                e.target.value
+                                            )
+                                        }
                                         className={input}
                                     />
+
                                     <Input
                                         type="number"
                                         placeholder="Max"
                                         value={data.max}
-                                        onChange={(e) => update("max", e.target.value)}
+                                        onChange={(e) =>
+                                            update(
+                                                "max",
+                                                e.target.value
+                                            )
+                                        }
                                         className={input}
                                     />
 
-                                    <Select
+                                    <SelectBox
+                                        items={["USD", "BDT", "EUR", "GBP"].map(
+                                            (x) => [x, x]
+                                        )}
                                         value={data.currency}
-                                        onChange={(v) => update("currency", v)}
-                                    >
-                                        <Select.Trigger className={select}>
-                                            <Select.Value />
-                                            <Select.Indicator>
-                                                <ChevronsExpandVertical size={13} />
-                                            </Select.Indicator>
-                                        </Select.Trigger>
-
-                                        <Select.Popover>
-                                            {options([
-                                                ["USD", "USD"],
-                                                ["BDT", "BDT"],
-                                                ["EUR", "EUR"],
-                                                ["GBP", "GBP"],
-                                            ])}
-                                        </Select.Popover>
-                                    </Select>
+                                        onChange={(v) =>
+                                            update("currency", v)
+                                        }
+                                        placeholder="USD"
+                                    />
                                 </div>
                             </div>
 
+                            {/* Location */}
                             <TextField
-                                isRequired
+                                isRequired={!data.remote}
                                 value={data.location}
-                                onChange={(v) => update("location", v)}
+                                onChange={(v) =>
+                                    update("location", v)
+                                }
                             >
-                                <Label className="mb-1.5 text-xs">Location</Label>
+                                <div className="mb-1.5 flex items-center justify-between">
+                                    <Label className="text-xs">
+                                        Location
+                                    </Label>
+
+                                    <Switch
+                                        isSelected={data.remote}
+                                        onChange={(v) =>
+                                            update("remote", v)
+                                        }
+                                        size="sm"
+                                    >
+                                        <Switch.Content>
+                                            <Switch.Control>
+                                                <Switch.Thumb />
+                                            </Switch.Control>
+                                            Remote
+                                        </Switch.Content>
+                                    </Switch>
+                                </div>
+
                                 <Input
-                                    placeholder="e.g. Dhaka, Bangladesh"
-                                    className={input}
+                                    disabled={data.remote}
+                                    placeholder={
+                                        data.remote
+                                            ? "Remote position"
+                                            : "e.g. Dhaka, Bangladesh"
+                                    }
+                                    className={`${input} ${
+                                        data.remote ? "opacity-50" : ""
+                                    }`}
                                 />
-                                <FieldError />
+
+                                {!data.remote && <FieldError />}
                             </TextField>
 
+                            {/* Deadline */}
                             <TextField
                                 isRequired
                                 value={data.deadline}
-                                onChange={(v) => update("deadline", v)}
+                                onChange={(v) =>
+                                    update("deadline", v)
+                                }
                             >
                                 <Label className="mb-1.5 text-xs">
                                     Application Deadline
                                 </Label>
-                                <Input type="date" className={input} />
+
+                                <Input
+                                    type="date"
+                                    value={data.deadline}
+                                    onChange={(e) =>
+                                        update(
+                                            "deadline",
+                                            e.target.value
+                                        )
+                                    }
+                                    className={input}
+                                />
+
                                 <FieldError />
                             </TextField>
-
                         </Fieldset.Group>
                     </Fieldset>
 
-                    {/* Job Description */}
+                    {/* Description */}
                     <Fieldset className="border-0 border-t border-white/10 p-0">
                         <Fieldset.Legend className="border-b border-white/10 px-5 py-3 text-sm font-medium">
                             Job Description
                         </Fieldset.Legend>
 
                         <Fieldset.Group className="grid gap-4 px-5 py-5">
+                            {[
+                                [
+                                    "Responsibilities",
+                                    "responsibilities",
+                                    true,
+                                    "Describe the main responsibilities...",
+                                ],
+                                [
+                                    "Requirements",
+                                    "requirements",
+                                    true,
+                                    "Skills, experience and qualifications...",
+                                ],
+                                [
+                                    "Benefits (Optional)",
+                                    "benefits",
+                                    false,
+                                    "e.g. Health insurance, flexible hours, paid leave...",
+                                ],
+                            ].map(
+                                ([label, key, required, placeholder]) => (
+                                    <TextField
+                                        key={key}
+                                        isRequired={required}
+                                        value={data[key]}
+                                        onChange={(v) =>
+                                            update(key, v)
+                                        }
+                                    >
+                                        <Label className="mb-1.5 text-xs">
+                                            {label}
+                                        </Label>
 
-                            <TextField
-                                isRequired
-                                value={data.responsibilities}
-                                onChange={(v) => update("responsibilities", v)}
-                            >
-                                <Label className="mb-1.5 text-xs">
-                                    Responsibilities
-                                </Label>
-                                <TextArea
-                                    rows={3}
-                                    placeholder="Describe the main responsibilities..."
-                                    className="min-h-[75px] resize-none rounded-md border border-white/10 bg-[#202021] px-3 py-2 text-sm text-white placeholder:text-gray-500"
-                                />
-                                <FieldError />
-                            </TextField>
+                                        <TextArea
+                                            rows={3}
+                                            placeholder={placeholder}
+                                            className={textarea}
+                                        />
 
-                            <TextField
-                                isRequired
-                                value={data.requirements}
-                                onChange={(v) => update("requirements", v)}
-                            >
-                                <Label className="mb-1.5 text-xs">
-                                    Requirements
-                                </Label>
-                                <TextArea
-                                    rows={3}
-                                    placeholder="Skills, experience and qualifications..."
-                                    className="min-h-[75px] resize-none rounded-md border border-white/10 bg-[#202021] px-3 py-2 text-sm text-white placeholder:text-gray-500"
-                                />
-                                <FieldError />
-                            </TextField>
-
-                            <TextField
-                                value={data.benefits}
-                                onChange={(v) => update("benefits", v)}
-                            >
-                                <Label className="mb-1.5 text-xs">
-                                    Benefits <span className="text-gray-500">(Optional)</span>
-                                </Label>
-
-                                <TextArea
-                                    rows={2}
-                                    placeholder="Insurance, bonuses, flexible hours..."
-                                    className="min-h-[60px] resize-none rounded-md border border-white/10 bg-[#202021] px-3 py-2 text-sm text-white placeholder:text-gray-500"
-                                />
-                            </TextField>
-
+                                        {required && <FieldError />}
+                                    </TextField>
+                                )
+                            )}
                         </Fieldset.Group>
                     </Fieldset>
 
@@ -279,32 +386,38 @@ export default function PostJobPage() {
 
                         <Fieldset.Group className="px-5 py-4">
                             <div className="flex items-center justify-between rounded-md border border-white/10 bg-[#202021] px-4 py-3">
+
                                 <div>
                                     <p className="text-[10px] text-gray-500">
                                         Registered Company
                                     </p>
-                                    <p className="mt-0.5 text-sm font-medium">
+
+                                    <p className="text-sm font-medium">
                                         Acme Corporation
                                     </p>
                                 </div>
 
                                 <div className="text-right">
                                     <p className="text-[10px] text-gray-500">
-                                        Growth Plan
+                                        Company ID
                                     </p>
+
                                     <p className="text-xs text-gray-300">
-                                        7 / 10 jobs
+                                        {companyId}
                                     </p>
                                 </div>
+
                             </div>
                         </Fieldset.Group>
                     </Fieldset>
 
-                    {/* Actions */}
+                    {/* Buttons */}
                     <Fieldset.Actions className="flex justify-end gap-2 border-t border-white/10 bg-[#1b1b1c] px-5 py-4">
+
                         <Button
                             type="button"
                             variant="secondary"
+                            onClick={() => setData(initialData)}
                             className="h-9 rounded-md border border-white/10 bg-transparent px-5 text-xs text-white"
                         >
                             Cancel
@@ -317,6 +430,7 @@ export default function PostJobPage() {
                         >
                             {loading ? "Posting..." : "Post Job"}
                         </Button>
+
                     </Fieldset.Actions>
 
                 </Form>
