@@ -7,8 +7,9 @@ import { useState } from "react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data:session, isPending } = useSession(); 
-  console.log("Session data in Navbar:", session, "Is Pending:", isPending);
+  const { data:session, } = useSession(); 
+  // console.log("Session data in Navbar:", session, "Is Pending:", isPending);
+
   const user = session?.user;
 
   const handleSignOut = async () => {

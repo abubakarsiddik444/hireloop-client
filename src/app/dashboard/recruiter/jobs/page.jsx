@@ -7,8 +7,10 @@ import { TrashBin, Pencil, Eye } from "@gravity-ui/icons";
 import toast from "react-hot-toast";
 
 
-export default function RecruiterJobs() {
-    const companyId = "company_123";
+export default function RecruiterJobs ({ company }) {
+    // const companyId = "company_123";
+    const companyId = "";
+        // const companyId = company?._id;
 
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
