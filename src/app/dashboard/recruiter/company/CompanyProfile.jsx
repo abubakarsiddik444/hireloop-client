@@ -158,7 +158,7 @@ export default function CompanyProfile({ recruiter, recruiterCompany }) {
     // =========================
     // NO COMPANY
     // =========================
-    if (!company && !editing) {
+    if (!company?._id && !editing) {
         return (
             <main className="min-h-screen bg-[#111112] px-4 py-10 text-white">
                 <div className="mx-auto max-w-5xl">
@@ -556,3 +556,34 @@ function Info({ title, value }) {
 
 // for the style: use the attached design:
 // for the hero ui components use the components code example of the latest version as below:
+
+
+
+//  https://ibb.co.com/V0pmYshB
+//  https://ibb.co.com/kVFWHz9f
+//  https://ibb.co.com/dJVwxvCf
+//  https://ibb.co.com/B2FbjnSx
+//  https://ibb.co.com/qLp7ZBJZ
+//  https://ibb.co.com/0RpXzXtT
+// https://ibb.co.com/jvnMscGR
+// https://ibb.co.com/MDj55ZfB
+// https://ibb.co.com/3yGXbtwc
+// https://ibb.co.com/60PGwZBY
+// https://ibb.co.com/VcbDNPfB
+// https://ibb.co.com/v4cDf4DD
+
+// give me 12 company  data in json fromat using the logo url i provided earlier and the recruiter information earlier
+// and the format of a company data will be like. do not provde the company_id
+
+// {
+//   name: 'amazon',
+//   website: 'amzon.com',
+//   industry: 'E-commerce',
+//   location: 'United States',
+//   employees: '1000+ employees',
+//   logo: 'https://i.ibb.co/zHBTDg9m/amazon.png',
+//   description: 'amazon ',
+//   recruiterId: '6aa823d88db8f70840c6bc46',
+//   status: 'Pending',
+//   createdAt: ISODate('2026-09-14T16:43:10.783Z')
+// }

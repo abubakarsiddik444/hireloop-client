@@ -5,18 +5,29 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { TrashBin, Pencil, Eye } from "@gravity-ui/icons";
 import toast from "react-hot-toast";
+// import { getLoggedInRecruiterCompany } from "@/lib/api/companies";
+// import { getCompanyJobs } from "@/lib/api/jobs";
+// import RecruiterJobs from "@/components/RecruiterJobs";
 
-
-export default function RecruiterJobs ({ company }) {
+export default function RecruiterJobs({ company }) {
     // const companyId = "company_123";
-    const companyId = "";
-        // const companyId = company?._id;
+    // const companyId = "";
+    // const companyId = company?._id;
 
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+
         const loadJobs = async () => {
+
+            // const company = await getLoggedInRecruiterCompany();
+            // const jobs = await getCompanyJobs(company._id) || [];
+    // const companyId = company?._id;
+    const companyId = "";
+
+
+
             try {
                 const res = await fetch(
                     `http://localhost:5000/api/jobs?companyId=${companyId}`
@@ -188,11 +199,10 @@ export default function RecruiterJobs ({ company }) {
 
                                                 <Table.Cell>
                                                     <span
-                                                        className={`rounded-full px-2 py-1 text-xs ${
-                                                            job.status === "active"
+                                                        className={`rounded-full px-2 py-1 text-xs ${job.status === "active"
                                                                 ? "bg-green-500/10 text-green-400"
                                                                 : "bg-gray-500/10 text-gray-400"
-                                                        }`}
+                                                            }`}
                                                     >
                                                         {job.status}
                                                     </span>
