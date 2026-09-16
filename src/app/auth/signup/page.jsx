@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { use, useState } from "react";
 import {
   Button,
   FieldError,
@@ -14,6 +14,9 @@ import { Description, Radio, RadioGroup } from "@heroui/react";
 
 import { Eye, EyeSlash } from "@gravity-ui/icons";
 import { signUp } from "@/lib/auth-client";
+import { useRouter, useSearchParams } from "next/navigation";
+// import {  } from "next/router";
+import { redirect } from "next/navigation";
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -25,6 +28,11 @@ export default function SignupPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const router = useRouter()
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
+
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -85,8 +93,10 @@ export default function SignupPage() {
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password,
-        role: role, 
-        callbackURL: "/",
+        role: role,
+        // callbackURL: "/",
+
+
       });
 
       console.log("Signup data:", data);
@@ -100,7 +110,9 @@ export default function SignupPage() {
       setSuccess("Account created successfully!");
 
       setTimeout(() => {
-        window.location.href = "/";
+        router.push(redirectTo);
+
+        // window.location.href = "/";
       }, 700);
     } catch (err) {
       console.error("Signup error:", err);
@@ -299,7 +311,7 @@ export default function SignupPage() {
               <Label>Subscription plan</Label>
               <RadioGroup defaultValue="seeker" name="role" onChange={value => setRole(value)}
 
-              orientation="horizontal">
+                orientation="horizontal">
                 <Radio value="seeker">
                   <Radio.Content>
                     <Radio.Control>
@@ -316,7 +328,7 @@ export default function SignupPage() {
                     <Label>Recruiter</Label>
                   </Radio.Content>
                 </Radio>
-                
+
               </RadioGroup>
             </div>
 
@@ -339,7 +351,7 @@ export default function SignupPage() {
             </p>
 
             <Link
-              href="/auth/signin"
+              href={`/auth/signin?redirect=${redirectTo}`}
               className="mt-2 inline-block font-medium text-purple-400 transition hover:text-purple-300"
             >
               Sign in

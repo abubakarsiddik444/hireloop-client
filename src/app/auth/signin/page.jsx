@@ -11,12 +11,21 @@ import {
   TextField,
 } from "@heroui/react";
 import { signIn } from "@/lib/auth-client";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SigninPage() {
+
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+
+  const router = useRouter()
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
+  // console.log("Redirecting to:", redirectTo)
+
 
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -48,6 +57,7 @@ export default function SigninPage() {
     if (!form.password) {
       setError("Password is required.");
       return;
+      
     }
 
     try {
@@ -56,6 +66,9 @@ export default function SigninPage() {
       const { data, error } = await signIn.email({
         email: form.email.trim(),
         password: form.password,
+
+
+
       });
 
       console.log("Signin data:", data);
@@ -68,7 +81,10 @@ export default function SigninPage() {
 
       setSuccess("Signed in successfully!");
 
-      window.location.href = "/";
+        router.push(redirectTo);
+
+
+      // window.location.href = "/";
     } catch (err) {
       console.error("Signin error:", err);
       setError(err?.message || "Something went wrong.");
@@ -208,7 +224,7 @@ export default function SigninPage() {
             </p>
 
             <Link
-              href="/auth/signup"
+              href={`/auth/signup?redirect=${redirectTo}`}
               className="mt-2 inline-block font-medium text-purple-400 transition hover:text-purple-300"
             >
               Create an account

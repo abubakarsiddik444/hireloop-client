@@ -181,7 +181,7 @@ const Page = async ({ params }) => {
                     size="lg"
                     className="w-full"
                   >
-                    Apply Now
+                    Apply For This Job
                     <ArrowUpRight size={18} />
                   </Button>
                 </Link>
