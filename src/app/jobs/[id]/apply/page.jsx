@@ -23,6 +23,7 @@ const ApplyPage = async ({ params }) => {
     const { id } = await params;
 
     const user = await getUserSession();
+    
 
     console.log('Current User Session:', user);
 

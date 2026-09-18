@@ -21,5 +21,5 @@ export default async function JobsPage() {
 
     </main>
   );
-}
+} 
 // this is the current jobsPage: and it is a server component. so give me updated version of integration as well as JobFilters component:
