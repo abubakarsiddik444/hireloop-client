@@ -83,7 +83,7 @@ export default function Navbar() {
 
             {/* Pricing */}
             <Link
-              href="/pricing"
+              href="/plans"
               className="text-sm font-normal text-gray-300 transition duration-200 hover:text-white"
             >
               Pricing

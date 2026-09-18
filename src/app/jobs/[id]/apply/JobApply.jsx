@@ -30,10 +30,12 @@ const JobApply = ({ job, applican }) => {
 
     const submissionData = {
       jobId: job?._id,
-      applicantId: applican?._id,
+      applicantId: applican?.id,
 
       applicantName:
         applican?.name || applican?.displayName || "",
+
+        // applicantId: applicant?.id,
 
       applicantEmail:
         applican?.email || "",

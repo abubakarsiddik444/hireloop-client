@@ -181,3 +181,29 @@ i have this job data: i want to display job details in a page where i have the d
 
 current state of the component that loads the data is below:
 
+
+
+<!-- plans page -->
+
+
+now give me a new page:
+Pricing (/pricing)
+A toggle to switch between For Job Seekers and For Recruiters, each showing three tiers in card format.
+
+For Job Seekers
+
+Plan	Price	Key Features
+Free	$0/forever	Browse & save up to 10 jobs, apply to up to 3 jobs per month, basic profile, email alerts
+Pro	$19/month	Apply to up to 30 jobs per month, unlimited saved jobs, application tracking, salary insights
+Premium	$39/month	Everything in Pro + unlimited applications, profile boost to recruiters, early access to new jobs, priority support
+For Recruiters
+
+Plan	Price	Key Features
+Free	$0/forever	Up to 3 active job posts, basic applicant management, standard listing visibility (great for a company's first year of hiring)
+Growth	$49/month	Up to 10 active job posts, applicant tracking, basic analytics, email support
+Enterprise	$149/month	Up to 50 active job posts, advanced analytics dashboard, featured job listings, team collaboration, custom branding, priority support
+FAQ accordion section covering cancellation, refunds, payment methods, and plan switching.
+
+
+use the similar style you have used before:
+and for different price options either use the text or the screenshot i have provided:
