@@ -22,6 +22,7 @@ import {
 const seekerPlans = [
     {
         name: "Free",
+        id: 'seeker_free',
         price: "$0",
         period: "/forever",
         description: "Everything you need to start your job search.",
@@ -36,6 +37,7 @@ const seekerPlans = [
     },
     {
         name: "Pro",
+        id: 'seeker_pro',
         price: "$19",
         period: "/month",
         description: "More applications and powerful job search tools.",
@@ -50,6 +52,7 @@ const seekerPlans = [
     },
     {
         name: "Premium",
+        id: 'seeker_premium',
         price: "$39",
         period: "/month",
         description: "Everything you need to maximize your job search.",
@@ -68,6 +71,7 @@ const seekerPlans = [
 const recruiterPlans = [
     {
         name: "Free",
+        id: 'recruiter_free',
         price: "$0",
         period: "/forever",
         description: "A simple way to start hiring for your company.",
@@ -82,6 +86,7 @@ const recruiterPlans = [
     },
     {
         name: "Growth",
+        id: 'recruiter_growth',
         price: "$49",
         period: "/month",
         description: "Powerful tools for growing hiring teams.",
@@ -96,6 +101,7 @@ const recruiterPlans = [
     },
     {
         name: "Enterprise",
+        id: 'recruiter_enterprise',
         price: "$149",
         period: "/month",
         description: "Advanced hiring tools for larger organizations.",
@@ -177,11 +183,10 @@ const PricingPage = () => {
                         <button
                             type="button"
                             onClick={() => setActiveTab("seekers")}
-                            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition ${
-                                activeTab === "seekers"
+                            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition ${activeTab === "seekers"
                                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                                     : "text-zinc-400 hover:text-white"
-                            }`}
+                                }`}
                         >
                             <Person
                                 width={18}
@@ -195,11 +200,10 @@ const PricingPage = () => {
                         <button
                             type="button"
                             onClick={() => setActiveTab("recruiters")}
-                            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition ${
-                                activeTab === "recruiters"
+                            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition ${activeTab === "recruiters"
                                     ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
                                     : "text-zinc-400 hover:text-white"
-                            }`}
+                                }`}
                         >
                             <Briefcase
                                 width={18}
@@ -220,11 +224,10 @@ const PricingPage = () => {
                         return (
                             <Card
                                 key={plan.name}
-                                className={`relative overflow-visible border bg-zinc-900 p-6 transition duration-300 hover:-translate-y-1 ${
-                                    plan.popular
+                                className={`relative overflow-visible border bg-zinc-900 p-6 transition duration-300 hover:-translate-y-1 ${plan.popular
                                         ? "border-blue-500 shadow-xl shadow-blue-500/10"
                                         : "border-zinc-800"
-                                }`}
+                                    }`}
                             >
 
                                 {/* Popular Badge */}
@@ -268,41 +271,30 @@ const PricingPage = () => {
 
                                 {/* ================= BUTTON ================= */}
 
-                                {plan.name === "Pro" ? (
+                                {plan.name !== "Free" ? (
                                     <form
                                         action="/api/checkout_sessions"
                                         method="POST"
                                         className="mt-7"
                                     >
-                                        <section>
-                                            <Button
-                                                type="submit"
-                                                role="link"
-                                                fullWidth
-                                                variant="bordered"
-                                                color="primary"
-                                                className="border-blue-500 text-blue-400 transition hover:bg-blue-500 hover:text-white"
-                                            >
-                                                <span className="flex items-center justify-center gap-2">
-                                                    Checkout
+                                        <input type="hidden" name="plan_id" value={plan.id} />
 
-                                                    <ArrowRight
-                                                        width={18}
-                                                        height={18}
-                                                    />
-                                                </span>
-                                            </Button>
-                                        </section>
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="bordered"
+                                            color="primary"
+                                            className="border-blue-500 text-blue-400 transition hover:bg-blue-500 hover:text-white"
+                                        >
+                                            <span className="flex items-center justify-center gap-2">
+                                                Choose {plan.name}
+                                                <ArrowRight width={18} height={18} />
+                                            </span>
+                                        </Button>
                                     </form>
                                 ) : (
                                     <Link
-                                        href={
-                                            plan.name === "Free"
-                                                ? activeTab === "seekers"
-                                                    ? "/jobs"
-                                                    : "/dashboard/recruiter"
-                                                : "/checkout"
-                                        }
+                                        href={activeTab === "seekers" ? "/jobs" : "/dashboard/recruiter"}
                                         className="mt-7 block"
                                     >
                                         <Button
@@ -312,14 +304,8 @@ const PricingPage = () => {
                                             className="border-blue-500 text-blue-400 transition hover:bg-blue-500 hover:text-white"
                                         >
                                             <span className="flex items-center justify-center gap-2">
-                                                {plan.name === "Free"
-                                                    ? "Get Started"
-                                                    : `Choose ${plan.name}`}
-
-                                                <ArrowRight
-                                                    width={18}
-                                                    height={18}
-                                                />
+                                                Get Started
+                                                <ArrowRight width={18} height={18} />
                                             </span>
                                         </Button>
                                     </Link>

@@ -56,6 +56,11 @@ export default function SignupPage() {
     setError("");
     setSuccess("");
 
+
+    const plan = role === 'seeker' ? 'seeker_free' : 'recruiter_free';
+
+
+
     if (!form.name.trim()) {
       setError("Name is required.");
       return;
@@ -94,6 +99,7 @@ export default function SignupPage() {
         email: form.email.trim(),
         password: form.password,
         role: role,
+        plan: plan,
         // callbackURL: "/",
 
 

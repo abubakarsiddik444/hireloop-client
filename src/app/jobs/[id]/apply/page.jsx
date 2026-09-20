@@ -18,6 +18,7 @@ import {
     Card,
     ProgressBar,
 } from '@heroui/react';
+import { getPlanById } from '@/lib/api/plans';
 
 const ApplyPage = async ({ params }) => {
     const { id } = await params;
@@ -77,10 +78,8 @@ const ApplyPage = async ({ params }) => {
     const applications = await getApplicationsByApplicant(user.id);
 
     // Current plan
-    const plan = {
-        name: 'Free',
-        maxApplicationsPerMonth: 3,
-    };
+    const plan = await getPlanById(user?.plan || 'seeker_free')
+    
 
     // Get job
     const job = await getJobById(id);
