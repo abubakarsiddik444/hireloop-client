@@ -5,20 +5,40 @@ import { Button } from "@heroui/react";
 import Link from "next/link";
 import { useState } from "react";
 
+const baseNavLinks = [
+  { label: "Browse Jobs", href: "/jobs" },
+  { label: "Company", href: "/companies" },
+  { label: "Pricing", href: "/plans" },
+];
+
+const dashboardLinks = {
+  seeker: "/dashboard/seeker",
+  recruiter: "/dashboard/recruiter",
+};
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { data:session, } = useSession(); 
-  // console.log("Session data in Navbar:", session, "Is Pending:", isPending);
+  const { data: session } = useSession();
 
   const user = session?.user;
 
   const handleSignOut = async () => {
     await signOut();
-  }
+  };
 
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
+
+  const navLinks = user?.email
+    ? [
+        ...baseNavLinks,
+        {
+          label: "Dashboard",
+          href: dashboardLinks[user.role] ?? dashboardLinks.seeker,
+        },
+      ]
+    : baseNavLinks;
 
   return (
     <nav
@@ -41,13 +61,8 @@ export default function Navbar() {
     >
       {/* Main Navbar */}
       <header className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
-
         {/* Logo */}
-        <Link
-          href="/"
-          onClick={closeMenu}
-          className="group flex items-center"
-        >
+        <Link href="/" onClick={closeMenu} className="group flex items-center">
           <span className="text-3xl font-bold tracking-[-1.5px]">
             <span className="text-[#1683e8] transition group-hover:text-[#3b9cf0]">
               hire
@@ -61,64 +76,46 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden items-center md:flex">
-
           {/* Navigation Links */}
           <div className="flex items-center gap-8">
-
-            {/* Browse Jobs */}
-            <Link
-              href="/jobs"
-              className="text-sm font-normal text-gray-300 transition duration-200 hover:text-white"
-            >
-              Browse Jobs
-            </Link>
-
-            {/* Company */}
-            <Link
-              href="/companies"
-              className="text-sm font-normal text-gray-300 transition duration-200 hover:text-white"
-            >
-              Company
-            </Link>
-
-            {/* Pricing */}
-            <Link
-              href="/plans"
-              className="text-sm font-normal text-gray-300 transition duration-200 hover:text-white"
-            >
-              Pricing
-            </Link>
-
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-normal text-gray-300 transition duration-200 hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
           {/* Divider */}
           <div className="mx-6 h-5 w-px bg-white/20" />
 
-          {/* Sign In */}
-          {
-            user ?
-            <>
-            Hi, {user.name}!
-            <Button onClick={handleSignOut} variant="ghost">
-              SignOut
-            </Button>
-            </>
-            :
+          {/* Sign In / User */}
+          {user ? (
+            <div className="mr-4 flex items-center gap-3">
+              <span className="text-sm text-gray-300">Hi, {user.name}!</span>
+              <Button onPress={handleSignOut} variant="ghost">
+                Sign Out
+              </Button>
+            </div>
+          ) : (
             <Link
-            href="/auth/signin"
-            className="mr-7 text-sm font-medium text-[#a78bfa] transition duration-200 hover:text-[#c4b5fd]"
-          >
-            Sign In
-          </Link>}
+              href="/auth/signin"
+              className="mr-7 text-sm font-medium text-[#a78bfa] transition duration-200 hover:text-[#c4b5fd]"
+            >
+              Sign In
+            </Link>
+          )}
 
-          {/* Get Started */}
+          {/* Get Started (always visible) */}
           <Link
             href="/auth/signup"
             className="rounded-lg bg-gradient-to-r from-[#7956f5] to-[#6854ee] px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-purple-500/20 transition duration-200 hover:scale-[1.02] hover:from-[#8868ff] hover:to-[#7564fa] hover:shadow-purple-500/30"
           >
             Get Started
           </Link>
-
         </div>
 
         {/* Mobile Menu Button */}
@@ -163,57 +160,55 @@ export default function Navbar() {
             </svg>
           )}
         </button>
-
       </header>
 
       {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="border-t border-white/10 bg-[#171719]/98 backdrop-blur-xl md:hidden">
-
           <div className="mx-auto max-w-7xl px-5 py-5 sm:px-8">
-
             <div className="flex flex-col">
-
-              {/* Browse Jobs */}
-              <Link
-                href="/jobs"
-                onClick={closeMenu}
-                className="rounded-lg px-4 py-3 text-sm font-medium text-gray-300 transition duration-200 hover:bg-white/5 hover:text-white"
-              >
-                Browse Jobs
-              </Link>
-
-              {/* Company */}
-              <Link
-                href="/companies"
-                onClick={closeMenu}
-                className="rounded-lg px-4 py-3 text-sm font-medium text-gray-300 transition duration-200 hover:bg-white/5 hover:text-white"
-              >
-                Company
-              </Link>
-
-              {/* Pricing */}
-              <Link
-                href="/pricing"
-                onClick={closeMenu}
-                className="rounded-lg px-4 py-3 text-sm font-medium text-gray-300 transition duration-200 hover:bg-white/5 hover:text-white"
-              >
-                Pricing
-              </Link>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeMenu}
+                  className="rounded-lg px-4 py-3 text-sm font-medium text-gray-300 transition duration-200 hover:bg-white/5 hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              ))}
 
               {/* Divider */}
               <div className="my-3 h-px bg-white/10" />
 
-              {/* Sign In */}
-              <Link
-                href="/auth/signin"
-                onClick={closeMenu}
-                className="rounded-lg px-4 py-3 text-sm font-medium text-[#a78bfa] transition duration-200 hover:bg-white/5 hover:text-[#c4b5fd]"
-              >
-                Sign In
-              </Link>
+              {/* Sign In / Sign Out */}
+              {user ? (
+                <>
+                  <span className="px-4 py-2 text-sm text-gray-400">
+                    Hi, {user.name}!
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      closeMenu();
+                      handleSignOut();
+                    }}
+                    className="rounded-lg px-4 py-3 text-left text-sm font-medium text-red-400 transition duration-200 hover:bg-white/5"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/auth/signin"
+                  onClick={closeMenu}
+                  className="rounded-lg px-4 py-3 text-sm font-medium text-[#a78bfa] transition duration-200 hover:bg-white/5 hover:text-[#c4b5fd]"
+                >
+                  Sign In
+                </Link>
+              )}
 
-              {/* Get Started */}
+              {/* Get Started (always visible) */}
               <Link
                 href="/auth/signup"
                 onClick={closeMenu}
@@ -221,35 +216,10 @@ export default function Navbar() {
               >
                 Get Started
               </Link>
-
             </div>
-
           </div>
-
         </div>
       )}
     </nav>
   );
 }
-
-
-
-
-// i am developing a hiring website. where job seekers can apply for jobs and there will be recruiter and admin, there will all other related pagees and dashboard. right now i need a navigation bar. give me a navbar 
-
-// i am using 
-// nextjs 
-/***
- * heroui
- * tailwindcss
- * 
- * give me the navbar component code. 
- * it will be mobile responsive  navbar. will have a logo as well and necessary links
- * 
- * a am using hero v3
- * 
- * code
- * 
- * do not use hero ui component. use html5 tags. if needed look at this at this code below to get inspriation:
- */
-
