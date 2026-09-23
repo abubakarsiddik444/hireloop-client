@@ -14,7 +14,7 @@ import {
     TextArea,
     TextField,
 } from "@heroui/react";
-import { ChevronsExpandVertical } from "@gravity-ui/icons";
+import { Briefcase, ChevronsExpandVertical, CircleCheck, CircleExclamation, Clock } from "@gravity-ui/icons";
 import toast from "react-hot-toast";
 import { redirect } from "next/navigation";
 
@@ -154,7 +154,49 @@ export default function PostJobForm({ company }) {
                     </p>
                 </div>
 
-                <Form onSubmit={handleSubmit}>
+                <div className="flex flex-col gap-3 rounded-xl border border-gray-700 bg-gray-900 p-4 shadow-sm">
+                    {/* Posting As */}
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 text-sm text-gray-400">
+                            <Briefcase className="h-4 w-4" />
+                            <span>Posting as:</span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <span className="font-semibold text-white">
+                                {company.name}
+                            </span>
+
+                            <span
+                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${company.status === "Approved"
+                                        ? "bg-green-500/15 text-green-400"
+                                        : "bg-yellow-500/15 text-yellow-400"
+                                    }`}
+                            >
+                                {company.status === "Approved" ? (
+                                    <CircleCheck className="h-3.5 w-3.5" />
+                                ) : (
+                                    <Clock className="h-3.5 w-3.5" />
+                                )}
+
+                                {company.status}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Approval Message */}
+                    {company.status !== "Approved" && (
+                        <div className="flex items-center gap-2 rounded-lg border border-yellow-500/20 bg-yellow-500/10 px-3 py-2.5 text-sm text-yellow-400">
+                            <CircleExclamation className="h-4 w-4 shrink-0" />
+
+                            <span>
+                                Please wait to get approval before posting a job.
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                {company.status === 'Approved' && <Form onSubmit={handleSubmit}>
 
                     {/* Job Info */}
                     <Fieldset className="border-0 p-0">
@@ -440,7 +482,7 @@ export default function PostJobForm({ company }) {
 
                     </Fieldset.Actions>
 
-                </Form>
+                </Form>}
             </div>
         </div>
     );

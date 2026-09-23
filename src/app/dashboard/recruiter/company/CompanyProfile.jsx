@@ -146,6 +146,8 @@ export default function CompanyProfile({ recruiter, recruiterCompany }) {
 
         const payload = await createCompany(newCompany);
         if (payload.insertedId) {
+            const savedCompany = {...company, _id: payload.insertedId}
+            setCompany(savedCompany)
 
             toast.success("Company profile created successfully!");
         }

@@ -46,6 +46,9 @@ const JobApply = ({ job, applican }) => {
       companyName:
         job?.companyName || "",
 
+        status: 'applied',
+
+
       resumeLink:
         formData.get("resume") || "",
 

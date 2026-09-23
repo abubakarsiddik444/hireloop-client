@@ -14,6 +14,7 @@ const baseNavLinks = [
 const dashboardLinks = {
   seeker: "/dashboard/seeker",
   recruiter: "/dashboard/recruiter",
+  admin: '/dashboard/admin'
 };
 
 export default function Navbar() {

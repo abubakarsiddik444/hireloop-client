@@ -9,6 +9,7 @@ const CompanyPage = async () => {
     const company = await getRecruiterCompany(user?.id);
     // console.log("User session in CompanyPage:", user);
 
+    console.log('company before create', company)
 
     return (
         <div>
