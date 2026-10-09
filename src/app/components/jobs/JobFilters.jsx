@@ -1,36 +1,86 @@
+
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Input,
   Select,
   Label,
   ListBox,
 } from "@heroui/react";
+import { useRouter } from "next/navigation";
 import JobListingContainer from "./JobListingContainer";
 
-export default function JobFilters({ jobs }) {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [type, setType] = useState("");
-  const [location, setLocation] = useState("");
+export default function JobFilters({ jobs = [], filters = {} }) {
+  const router = useRouter();
+
+  // Initialize state from URL query parameters
+  const [search, setSearch] = useState(filters.search || "");
+  const [category, setCategory] = useState(filters.category || "");
+  const [type, setType] = useState(filters.type || "");
+  const [location, setLocation] = useState(
+    filters.remote === "true"
+      ? "remote"
+      : filters.remote === "false"
+        ? "onsite"
+        : ""
+  );
+
+  // Update URL when filters change
+  useEffect(() => {
+    const sp = new URLSearchParams();
+
+    if (search.trim()) {
+      sp.set("search", search.trim());
+    }
+
+    if (category && category !== "all") {
+      sp.set("category", category);
+    }
+
+    if (type && type !== "all") {
+      sp.set("type", type);
+    }
+
+    if (location === "remote") {
+      sp.set("remote", "true");
+    } else if (location === "onsite") {
+      sp.set("remote", "false");
+    }
+
+    const query = sp.toString();
+    const path = query ? `/jobs?${query}` : "/jobs";
+
+    router.replace(path, { scroll: false });
+  }, [search, category, type, location, router]);
+
+  const safeJobs = Array.isArray(jobs) ? jobs : [];
 
   const categories = [
-    ...new Set(jobs.map((job) => job.category).filter(Boolean)),
+    ...new Set(
+      safeJobs.map((job) => job.category).filter(Boolean)
+    ),
   ];
 
   const types = [
-    ...new Set(jobs.map((job) => job.type).filter(Boolean)),
+    ...new Set(
+      safeJobs.map((job) => job.type).filter(Boolean)
+    ),
   ];
 
-  const filteredJobs = jobs.filter((job) => {
-    const text = search.toLowerCase().trim();
+  // Filter jobs
+  const filteredJobs = safeJobs.filter((job) => {
+    const text = (search || "").toLowerCase().trim();
+
+    const title = (job.title || "").toLowerCase();
+    const company = (job.companyName || "").toLowerCase();
+    const jobLocation = (job.location || "").toLowerCase();
 
     const searchMatch =
       !text ||
-      job.title?.toLowerCase().includes(text) ||
-      job.companyName?.toLowerCase().includes(text) ||
-      job.location?.toLowerCase().includes(text);
+      title.includes(text) ||
+      company.includes(text) ||
+      jobLocation.includes(text);
 
     const categoryMatch =
       !category || job.category === category;
@@ -60,12 +110,8 @@ export default function JobFilters({ jobs }) {
 
   return (
     <div className="mx-auto max-w-7xl">
-
-      {/* Filters */}
       <div className="mb-6 rounded-2xl border border-white/10 bg-[#111] p-4">
-
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-
           {/* Search */}
           <div className="min-w-0 lg:col-span-2">
             <Label className="mb-2 block text-sm text-white">
@@ -73,9 +119,15 @@ export default function JobFilters({ jobs }) {
             </Label>
 
             <Input
-              className="w-md"
+              className="w-full"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(value) =>
+                setSearch(
+                  typeof value === "string"
+                    ? value
+                    : value?.target?.value || ""
+                )
+              }
               placeholder="Search title, company or location"
             />
           </div>
@@ -105,7 +157,6 @@ export default function JobFilters({ jobs }) {
                     <Label className="capitalize">
                       {item}
                     </Label>
-
                     <ListBox.ItemIndicator />
                   </ListBox.Item>
                 ))}
@@ -138,17 +189,15 @@ export default function JobFilters({ jobs }) {
                     <Label className="capitalize">
                       {item}
                     </Label>
-
                     <ListBox.ItemIndicator />
                   </ListBox.Item>
                 ))}
               </ListBox>
             </Select.Popover>
           </Select>
-
         </div>
 
-        {/* Location */}
+        {/* Work Location */}
         <div className="mt-4 max-w-[250px]">
           <Select
             value={location || null}
@@ -165,7 +214,6 @@ export default function JobFilters({ jobs }) {
 
             <Select.Popover>
               <ListBox>
-
                 <ListBox.Item
                   id="remote"
                   textValue="Remote"
@@ -181,31 +229,28 @@ export default function JobFilters({ jobs }) {
                   <Label>On-site</Label>
                   <ListBox.ItemIndicator />
                 </ListBox.Item>
-
               </ListBox>
             </Select.Popover>
           </Select>
         </div>
 
-        {/* Bottom */}
+        {/* Results and Clear */}
         <div className="mt-5 flex items-center justify-between">
           <p className="text-sm text-white/40">
             {filteredJobs.length} open positions
           </p>
 
           <button
+            type="button"
             onClick={clearFilters}
             className="text-sm text-white/50 hover:text-white"
           >
             Clear filters
           </button>
         </div>
-
       </div>
 
-      {/* Job List */}
       <JobListingContainer jobs={filteredJobs} />
-
     </div>
   );
 }

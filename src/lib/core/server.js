@@ -47,11 +47,11 @@ export const authHeaders = async () => {
 
 export const serverFetch = async (path) => {
     const res = await fetch(`${baseUrl}${path}`);
-    const text = await res.text();
+    // const text = await res.text();
 
-    if (!res.ok) {
-        throw new Error(text || `Request failed: ${res.status}`);
-    }
+    // if (!res.ok) {
+    //     throw new Error(text || `Request failed: ${res.status}`);
+    // }
 
     // return text ? JSON.parse(text) : null;
     return handleStatusCode(res);

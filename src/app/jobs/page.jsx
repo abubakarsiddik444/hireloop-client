@@ -1,12 +1,19 @@
+
 import { getJobs } from "@/lib/api/jobs";
 import JobFilters from "../components/jobs/JobFilters";
 
-export default async function JobsPage() {
-  const jobs = await getJobs();
+export default async function JobsPage({ searchParams }) {
+  const filters = await searchParams;
+  
+  const querySearch = new URLSearchParams(filters)
+  const queryString = querySearch.toString();
+
+  console.log("search Q", filters, queryString);
+
+  const jobs = await getJobs(queryString);
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] px-5 py-8">
-
       <div className="mx-auto mb-5 max-w-7xl">
         <h2 className="text-3xl font-semibold text-white">
           Explore Open Positions
@@ -17,9 +24,10 @@ export default async function JobsPage() {
         </p>
       </div>
 
-      <JobFilters jobs={jobs} />
-
+      <JobFilters
+        jobs={jobs}
+        filters={filters}
+      />
     </main>
   );
-} 
-// this is the current jobsPage: and it is a server component. so give me updated version of integration as well as JobFilters component:
+}
