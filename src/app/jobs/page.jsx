@@ -3,7 +3,12 @@ import { getJobs } from "@/lib/api/jobs";
 import JobFilters from "../components/jobs/JobFilters";
 
 export default async function JobsPage({ searchParams }) {
-  const filters = await searchParams;
+  const searchParamsData = await searchParams;
+
+  const filters = {
+    ...searchParamsData,
+    remote: searchParamsData.remote === "true" ? "true" : false,
+  };
   
   const querySearch = new URLSearchParams(filters)
   const queryString = querySearch.toString();
